@@ -1,0 +1,89 @@
+// This is the text editor interface. 
+// Anything you type or change here will be seen by the other person in real time.
+
+/*
+
+1) Capitalization
+Example 1: <set: {yellow, radish}, input: yelloW, output: yellow>
+YeLLoW -> yellow
+Example 2: <set: {Yellow, radish}, input: yelloW, output: Yellow>
+
+2) Vowels (letters in the set {a,e,i,o,u}) mixed up - consonants
+   are in the correct order, but one or more vowels in the input
+   word is/are not the same as the vowels in the corresponding dictionary word
+Example 1: <set: {yellow, radish}, input: yollow, output: yellow>
+Example 2: <set: {yellow, radish}, input: redosh, output: radish>
+
+
+
+When there is no valid suggestion, your function should return the string "NONE".
+When there is more than one valid suggestion, your function can return any one of them.
+When there is no spelling mistake in the input (exact match found), your function should return the same word back.
+
+Spellchecker s = new Spellchecker()
+s.insert("yellow");
+s.insert("radish");
+s.spellcheck("yelloW") == "yellow"
+
+<K,V> = <input.toLowerCase(), output>
+yellow yelloW yellOw yellOW 
+*/
+
+import java.util.*;
+
+public class Spellchecker {
+    HashSet<String> words;
+    HashMap<String,String> dict;
+    
+    public static void main(String[] i) {
+        Spellchecker s = new Spellchecker();
+        s.insert("yellow");
+        s.insert("radish");
+        System.out.println(s.spellcheck("yelloW") == "yellow");
+        System.out.println(s.spellcheck("YeLLoW") == "yellow");
+        System.out.println(s.spellcheck("YElloW") == "yellow");
+        System.out.println(s.spellcheck("YEllaW") == "yellow");
+    }
+    
+    Spellchecker() {
+        words = new HashSet<String>();
+        dict = new HashMap<String,String>();
+    }
+    
+    void insert (String word) {
+        words.add(word);
+        String lower = word.toLowerCase();
+        dict.put(lower,word);
+        
+        StringBuilder sb = new StringBuilder(lower);
+        for (int i=0; i<word.length(); i++) {
+            char c = sb.charAt(i);
+            if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u') {
+                sb.setCharAt(i,'a');
+            }
+        }
+        dict.put(sb.toString(), word);
+    }
+
+    String spellcheck (String in) {
+        String lower = in.toLowerCase();
+        if (dict.containsKey(lower)) {
+            return dict.get(lower);
+        } else {
+            StringBuilder sb = new StringBuilder(lower);
+            for (int i=0; i<in.length(); i++) {
+                char c = sb.charAt(i);
+                if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u') {
+                    sb.setCharAt(i,'a');
+                    if (dict.containsKey(sb.toString())) {
+                        return dict.get(sb.toString());
+                    }
+                }
+            }
+        }
+        
+        return "NONE";
+    }
+}
+
+
